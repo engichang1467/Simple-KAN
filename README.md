@@ -20,10 +20,11 @@ KAN takes advantage of this theorem by constructing a neural network architectur
 
 ## Model's Training Performance 
 
-### Training Accuracy and Loss
+### Training & Validation Accuracy and Loss
 
-![](img/train_acc_loss.png)
-The above image shows the training accuracy and loss curves for the KAN model implemented in this repository.
+![](img/train_val_acc_loss.png)
+
+The image above shows the training and validation accuracy and loss curves for the KAN model implemented in this repository.
 
 ## Getting Started
 
@@ -32,16 +33,13 @@ The above image shows the training accuracy and loss curves for the KAN model im
 pip install -r requirements.txt
 ```
 - To get started with this implementation of KAN, please refer to the `model.py` to see what the architecture look like.
-- For training, you can check out the `train.py`
+- For training and validation, you can check out the `train.py`
 
 ```
 python train.py
 ```
-- For validation, you can checkout the `eval.py`
-```
-python eval.py
-```
-- For both training and validating, you can checkout `demo.ipynb` for a quick run.
+
+- You can checkout `demo.ipynb` for a quick run.
 
 ## References
 
