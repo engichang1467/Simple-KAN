@@ -192,3 +192,27 @@ class KAN(nn.Module):
         x = self.output_layer(x)
 
         return x
+
+class MLP(nn.Module):
+    def __init__(
+        self,
+        input_features,
+        output_features,
+        # layers_hidden,
+    ):
+        super().__init__()
+        self.all_layers = torch.nn.Sequential(
+            # input layer
+            torch.nn.Linear(input_features, 64),
+            torch.nn.ReLU(),
+            # 2nd hidden layer
+            torch.nn.Linear(64, 64),
+            torch.nn.ReLU(),
+            # output layer
+            torch.nn.Linear(64, output_features),
+        )
+
+    def forward(self, x):
+        x = torch.flatten(x, start_dim=1)
+        logits = self.all_layers(x)
+        return logits
