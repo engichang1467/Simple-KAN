@@ -4,6 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+# Check for CUDA availability and set the device
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class KANLinear(nn.Module):
     def __init__(
@@ -75,6 +78,10 @@ class KANLinear(nn.Module):
         # Add an extra dimension to the input tensor for broadcasting
         input_tensor_expanded = x.unsqueeze(-1)  # (batch_size, in_features, 1)
 
+        # Convert tensor into the current device type
+        expanded_grid = expanded_grid.to(device)
+        input_tensor_expanded = input_tensor_expanded.to(device)
+
         # Initialize the bases tensor with boolean values
         bases = (
             (input_tensor_expanded >= expanded_grid[:, :, :-1])
@@ -122,6 +129,10 @@ class KANLinear(nn.Module):
         transposed_output = output_tensor.transpose(
             0, 1
         )  # (input_dim, batch_size, output_dim)
+
+        # Convert tensor into the current device type
+        transposed_bases = transposed_bases.to(device)
+        transposed_output = transposed_output.to(device)
 
         # Solve the least-squares problem to find the coefficients
         coefficients_solution = torch.linalg.lstsq(

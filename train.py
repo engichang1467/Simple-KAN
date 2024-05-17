@@ -20,9 +20,17 @@ train_loader = torch.utils.data.DataLoader(
     shuffle=True,
 )
 
+test_loader = torch.utils.data.DataLoader(
+    datasets.MNIST("data", train=False, transform=transform),
+    batch_size=64,
+    shuffle=False,
+)
+
 # Define the model and optimizer
 model = KAN(input_features=28 * 28, output_features=10, layers_hidden=[64])
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"device: {device}")
+model.to(device)
 
 # Define the optimizer and loss function
 optimizer = optim.AdamW(model.parameters(), lr=1e-3, weight_decay=1e-4)
@@ -38,7 +46,8 @@ for epoch in range(num_epochs):
     with tqdm(train_loader) as pbar:
         for i, (images, labels) in enumerate(pbar):
             images = images.view(-1, 28 * 28)
-            labels = labels
+            images = images.to(device)
+            labels = labels.to(device)
 
             optimizer.zero_grad()
             output = model(images)
@@ -62,19 +71,24 @@ for epoch in range(num_epochs):
         avg_loss = epoch_loss / len(train_loader)
         avg_acc = epoch_acc / len(train_loader)
 
-        print(f"Epoch {epoch+1}/{num_epochs} - Loss: {avg_loss:.4f} - Accuracy: {avg_acc:.4f}")
+        print(
+            f"Epoch {epoch+1}/{num_epochs} - Loss: {avg_loss:.4f} - Accuracy: {avg_acc:.4f}"
+        )
 
-    
     model.eval()
     val_loss = 0
     val_accuracy = 0
     with torch.no_grad():
         for images, labels in test_loader:
             images = images.view(-1, 28 * 28)
+
+            images = images.to(device)
+            labels = labels.to(device)
+
             output = model(images)
             val_loss += criterion(output, labels).item()
             val_accuracy += (output.argmax(dim=1) == labels).float().mean().item()
-    
+
     # Calculate average loss and accuracy for the validation
     val_loss /= len(test_loader)
     val_accuracy /= len(test_loader)
